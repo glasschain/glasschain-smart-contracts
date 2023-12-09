@@ -1,0 +1,51 @@
+# Design Models
+
+User object
+    - address
+    - list(ratingObjsHash)
+    - company Metadata obj Hash
+
+Rating Obj
+    - rating id: hash of this
+    - userId (user address)
+    - company_id (company Hash)
+    - rating score(1-5)
+    - review comment (string)
+    - time created(timestamp)
+
+Company Rating obj
+    - company Hash (Company domain hash)
+    - mapping of rating scores (number of 0s, 1s, 2s, .. 5s)
+    - list(Rating Obj hashes/id)
+
+Company Metadata obj: 
+    - company id (hash of domain)
+    - name
+    - description
+    - company domain
+
+# functions
+1. registerCompany
+    parameters: 
+        - user address (msg.sender)
+        - company name
+        - company description
+        - company domain
+2. registerUser
+    parameters:
+        - user address (msg.sender)
+        - company domain
+3. addReview
+    parameters:
+        - user address (msg.sender)
+        - rating score
+        - review comment
+        - company domain
+4. fetchCompanyRatings
+    parameters:
+        - company domain
+5. fetchAllCompanies
+    parameters:
+        - none
+
+
