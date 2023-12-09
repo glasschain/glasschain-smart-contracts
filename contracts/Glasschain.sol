@@ -14,8 +14,9 @@ contract Glasschain {
         bytes32 ratingId;
         address userAddress;
         bytes32 companyId;
+        string companyDomain;
         uint8 ratingScore;
-        bytes32 ipfsCommentHash;
+        string ipfsCommentHash;
         uint256 timeCreated;
     }
     
@@ -28,7 +29,7 @@ contract Glasschain {
     struct CompanyObj {
         bytes32 companyId; // hash of the company domain
         string name;
-        bytes32 ipfsComapnyHash;
+        string ipfsComapnyHash;
         string companyDomain;
     }
 
@@ -51,7 +52,7 @@ contract Glasschain {
     // mapping of company domain to company rating object
     mapping(bytes32 => CompanyRating) public companyRatingObjs;
 
-    function registerCompany(string memory companyName, bytes32 ipfsComapnyHash, string memory companyDomain) external {
+    function registerCompany(string memory companyName, string memory ipfsComapnyHash, string memory companyDomain) external {
         // make sure that only owner of the contract can register a company
         require(msg.sender == owner, "Only owner can register a company");
         bytes32 companyId = keccak256(abi.encodePacked(companyDomain));
@@ -67,7 +68,7 @@ contract Glasschain {
         users[msg.sender] = User(msg.sender, new bytes32[](0), companyId);
     }
 
-    function addReview(uint8 ratingScore, string memory companyDomain, bytes32 ipfsCommentHash) external {
+    function addReview(uint8 ratingScore, string memory companyDomain, string memory ipfsCommentHash) external {
         bytes32 companyId = keccak256(abi.encodePacked(companyDomain));
         require(companyObjs[companyId].companyId != 0, "Company not registered");
         require(users[msg.sender].userAddress != address(0), "User not registered");
@@ -82,13 +83,18 @@ contract Glasschain {
             require(users[msg.sender].ratingHashes[i] != ratingId, "Rating already exists for the user and company");
         }
 
-        Rating memory ratingObj = Rating(ratingId, msg.sender, companyId, ratingScore, ipfsCommentHash, block.timestamp);
+        Rating memory ratingObj = Rating(ratingId, msg.sender, companyId, companyDomain, ratingScore, ipfsCommentHash, block.timestamp);
         
         ratingObjs[ratingId] = ratingObj;
         users[msg.sender].ratingHashes.push(ratingId);
 
         companyRatingObjs[companyId].ratingScores[ratingScore]++;
         companyRatingObjs[companyId].ratingHashes.push(ratingId);
+    }
+
+    function fetchUser() external view returns (string memory companyDomain, bytes32[] memory ratingHashes) {
+        require(users[msg.sender].userAddress != address(0), "User not registered");
+        return (companyObjs[users[msg.sender].companyId].companyDomain, users[msg.sender].ratingHashes);
     }
 
     function fetchCompanyRatings(string memory companyDomain) external view returns (uint8[] memory, bytes32[] memory) {
@@ -105,10 +111,15 @@ contract Glasschain {
         return (ratingScores, companyRatingObj.ratingHashes);
     }
 
-    function fetchAllCompanies() external view returns (bytes32[] memory allCompanyIds, bytes32[] memory ipfsComapnyHashes, string[] memory companyDomains) {
+    function fetchRating(bytes32 ratingId) external view returns (uint8 rating, string memory companyDomain, string memory ipfsCommentHash, uint256 timeCreated) {
+        Rating storage ratingObj = ratingObjs[ratingId];
+        return (ratingObj.ratingScore, ratingObj.companyDomain, ratingObj.ipfsCommentHash, ratingObj.timeCreated);
+    }
+
+    function fetchAllCompanies() external view returns (bytes32[] memory allCompanyIds, string[] memory ipfsComapnyHashes, string[] memory companyDomains) {
         uint256 length = companyIds.length;
         bytes32[] memory _allCompanyIds = new bytes32[](length);
-        bytes32[] memory _ipfsComapnyHashes = new bytes32[](length);
+        string[] memory _ipfsComapnyHashes = new string[](length);
         string[] memory _companyDomains = new string[](length);
 
         for (uint256 i = 0; i < length; i++) {
