@@ -5,11 +5,11 @@ const config: HardhatUserConfig = {
   solidity: "0.8.19",
   networks: {
     zkEVM: {
-    url: `https://rpc.public.zkevm-test.net`,
-    accounts: ['18f74603ee8e33e9ba575a88bde542e395d628e83168175e64a57d62f72e04aa'],
+    url: `https://rpc-mumbai.maticvigil.com/`,
+    accounts: ['35c7a994392e58cb9481faa0a433d9852afa1deb3dc75da74211fd4c69e15dbb'],
     },
   },
-  // defaultNetwork: "zkEVM",
+  defaultNetwork: "zkEVM",
 };
 
 export default config;

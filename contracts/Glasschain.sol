@@ -105,16 +105,18 @@ contract Glasschain {
         return (ratingScores, companyRatingObj.ratingHashes);
     }
 
-    function fetchAllCompanies() external view returns (bytes32[] memory allCompanyIds, bytes32[] memory ipfsComapnyHashes) {
+    function fetchAllCompanies() external view returns (bytes32[] memory allCompanyIds, bytes32[] memory ipfsComapnyHashes, string[] memory companyDomains) {
         uint256 length = companyIds.length;
         bytes32[] memory _allCompanyIds = new bytes32[](length);
         bytes32[] memory _ipfsComapnyHashes = new bytes32[](length);
+        string[] memory _companyDomains = new string[](length);
 
         for (uint256 i = 0; i < length; i++) {
             _allCompanyIds[i] = companyObjs[companyIds[i]].companyId;
             _ipfsComapnyHashes[i] = companyObjs[companyIds[i]].ipfsComapnyHash;
+            _companyDomains[i] = companyObjs[companyIds[i]].companyDomain;
         }
 
-        return (_allCompanyIds, _ipfsComapnyHashes);
+        return (_allCompanyIds, _ipfsComapnyHashes, _companyDomains);
     }
 }
